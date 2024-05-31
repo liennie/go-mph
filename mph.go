@@ -55,7 +55,8 @@ func New(keys []string) *Table {
 	newseed:
 		for seed = 1; seed <= math.MaxInt32; seed++ {
 			for _, k := range subkeys {
-				i := xorshiftMult64(k.hash+seed) % size
+				hash := metro.Hash64Str(keys[k.idx], seed)
+				i := hash & (size - 1)
 				if entries[i] == 0 && values[i] == 0 {
 					// looks free, claim it
 					// idx+1 so we can identify empty entries in the table with 0
@@ -121,15 +122,9 @@ func (t *Table) Query(k string) uint32 {
 		return t.Values[-seed-1]
 	}
 
-	i = xorshiftMult64(uint64(seed)+hash) & (size - 1)
+	hash = metro.Hash64Str(k, uint64(seed))
+	i = hash & (size - 1)
 	return t.Values[i]
-}
-
-func xorshiftMult64(x uint64) uint64 {
-	x ^= x >> 12 // a
-	x ^= x << 25 // b
-	x ^= x >> 27 // c
-	return x * 2685821657736338717
 }
 
 func nextPower2(n int) int {
