@@ -1,0 +1,5 @@
+bigkeys.txt
+*.new.big.txt
+*.new.small.txt
+*.query.big.txt
+*.query.small.txt

@@ -12,27 +12,44 @@ import (
 var keysFile = flag.String("keys", "", "load keys datafile")
 
 func loadKeys(tb testing.TB) []string {
-
 	if *keysFile != "" {
 		return loadBigKeys(tb, *keysFile)
 	}
 
 	return []string{
-		"foo",
-		"bar",
-		"baz",
-		"qux",
-		"zot",
-		"frob",
-		"zork",
-		"zeek",
+		"Apple",
+		"Banana",
+		"Cherry",
+		"Date",
+		"Elderberry",
+		"Fig",
+		"Grape",
+		"Honeydew",
+		"Ilama",
+		"Jackfruit",
+		"Kiwi",
+		"Lemon",
+		"Mango",
+		"Nectarine",
+		"Orange",
+		"Papaya",
+		"Quince",
+		"Raspberry",
+		"Strawberry",
+		"Tomato",
+		"Ugli",
+		"Vanilla",
+		"Watermelon",
+		"Xigua",
+		"Yamamomo",
+		"Zucchini",
 	}
 }
 
 func loadBigKeys(tb testing.TB, filename string) []string {
 	f, err := os.Open(filename)
 	if err != nil {
-		tb.Fatalf("unable to keys file: %v", err)
+		tb.Fatalf("unable to open keys file: %v", err)
 	}
 	defer f.Close()
 
@@ -46,10 +63,17 @@ func loadBigKeys(tb testing.TB, filename string) []string {
 }
 
 func testMPH(t *testing.T, keys []string) {
+	const maxErrors = 10
+
+	errors := 0
 	tab := New(keys)
 	for i, k := range keys {
 		if got := tab.Query(k); got != int32(i) {
 			t.Errorf("Lookup(%q)=%v, want %v", k, got, i)
+			errors++
+			if errors >= maxErrors {
+				t.FailNow()
+			}
 		}
 	}
 }
@@ -62,7 +86,7 @@ func TestMPH(t *testing.T) {
 func TestMPHRandomSubsets(t *testing.T) {
 	keys := loadKeys(t)
 
-	iterations := 100 * len(keys)
+	const iterations = 100
 
 	for i := 0; i < iterations; i++ {
 		perm := rand.Perm(rand.Intn(len(keys)))
@@ -73,6 +97,18 @@ func TestMPHRandomSubsets(t *testing.T) {
 
 		t.Run(fmt.Sprintf("%d-%d", i, len(subkeys)), func(t *testing.T) { testMPH(t, subkeys) })
 	}
+}
+
+func BenchmarkNew(b *testing.B) {
+	keys := loadKeys(b)
+
+	b.ResetTimer()
+
+	var table *Table
+	for n := 0; n < b.N; n++ {
+		table = New(keys)
+	}
+	_ = table
 }
 
 var sink int32
