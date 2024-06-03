@@ -19,7 +19,10 @@ type entry struct {
 	hash uint64
 }
 
-// New constructs a minimal perfect hash function for the set of keys which returns the index of item in the keys array.
+// New constructs a minimal perfect hash function for the set of keys
+// which returns the index of item in the keys array.
+// It panics if there are duplicate keys.
+// The caller is responsible for deduplicating the keys before calling New.
 func New(keys []string) *Table {
 	assert(len(keys) <= math.MaxInt32, "too many keys")
 
