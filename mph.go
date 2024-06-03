@@ -44,10 +44,21 @@ func New(keys []string) *Table {
 
 	assigned := 0
 	entries := make(map[uint64]uint32, len(h[0]))
+	keySet := make(map[string]struct{}, len(h[0]))
 
 	var hidx int
 	for hidx = 0; hidx < len(h) && len(h[hidx]) > 1; hidx++ {
 		subkeys := h[hidx]
+
+		clear(keySet)
+		for _, k := range subkeys {
+			key := keys[k.idx]
+
+			if _, exists := keySet[key]; exists {
+				panic("duplicate key " + key)
+			}
+			keySet[key] = struct{}{}
+		}
 
 		var seed uint64
 		clear(entries)
