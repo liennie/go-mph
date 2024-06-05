@@ -4,6 +4,13 @@ minimal perfect hash functions
 
 godoc: https://pkg.go.dev/github.com/liennie/go-mph
 
+## Changes
+
+* some memory optimizations, making `New` run faster due to less allocations
+* using a second hash instead of `xorshiftmult`, making `New` more robust against collisions,
+but also making it slower and making `Query` slightly slower
+* sanity checks and duplicate key check
+
 ## Benchmarks
 
 Four versions were benchmarked: without change, with memory optimizations,
