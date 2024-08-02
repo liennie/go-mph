@@ -45,7 +45,6 @@ func New(keys []string) *Table {
 	values := make([]uint32, size)
 	seeds := make([]int32, size)
 
-	assigned := 0
 	entries := make(map[uint64]uint32, len(h[0]))
 	keySet := make(map[string]struct{}, len(h[0]))
 
@@ -92,7 +91,6 @@ func New(keys []string) *Table {
 		for k, v := range entries {
 			values[k] = v
 		}
-		assigned += len(entries)
 
 		// ... and assign this seed value for every subkey
 		// NOTE(dgryski): While k.hash is different for each entry, i = k.hash % size is the same.
